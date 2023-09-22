@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "strict": true,
+		"target": "es6",
+		"lib": ["webworker", "es6", "scripthost", "dom"]
+    },
+    "include": ["**/*.ts"]
+}
