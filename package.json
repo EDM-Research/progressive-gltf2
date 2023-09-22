@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {
+    "@babylonjs/loaders": "^6.8.0",
+    "@babylonjs/materials": "^6.8.0",
     "@types/three": "^0.144.0",
+    "babylonjs": "^5.54.0",
     "draco": "^0.0.1",
     "file-loader": "^6.2.0",
     "three": "^0.144.0",
@@ -16,7 +19,7 @@
     "webpack-merge": "^5.8.0"
   },
   "scripts": {
-	"cww": "tsc ./src/client/worker.ts --outDir ./dist/client/",
+    "cww": "tsc ./src/client/worker.ts --outDir ./dist/client/",
     "dev": "webpack serve --config ./src/client/webpack.dev.js",
     "build": "webpack --config ./src/client/webpack.prod.js",
     "builddev": "webpack --config ./src/client/webpack.dev.js",
@@ -24,5 +27,8 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@babylonjs/core": "^6.8.0"
+  }
 }

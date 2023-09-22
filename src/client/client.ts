@@ -52,25 +52,31 @@ const globalConfig = 	{
 
 const DEFAULT_MOVEMENT_SPEED = 2;
 
+//import * as THREE from 'three'
+//import { FlyControls } from 'three/examples/jsm/controls/FlyControls'
+//
+//import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+//import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+//import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader'
+//const  MeshoptDecoder = require('three/examples/jsm/libs/meshopt_decoder.module.js')
+//import Stats from 'three/examples/jsm/libs/stats.module'
+//
+//// @ts-ignore
+//import 'three-sixty/build/three-sixty'
 
-import * as THREE from 'three'
-import { FlyControls } from 'three/examples/jsm/controls/FlyControls'
+import * as BABYLON from "@babylonjs/core";
 
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader'
-const  MeshoptDecoder = require('three/examples/jsm/libs/meshopt_decoder.module.js')
-import Stats from 'three/examples/jsm/libs/stats.module'
+import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder';
+import { CreateSphere } from '@babylonjs/core/Meshes/Builders/sphereBuilder';
+import { Scene } from '@babylonjs/core/scene';
 
-// @ts-ignore
-import 'three-sixty/build/three-sixty'
+import { GridMaterial } from '@babylonjs/materials/grid/gridMaterial';
 
-
-
-
-
-
-
+import "@babylonjs/loaders/glTF";
 
 let locks: any = []
 let locks_key: any = []
@@ -92,61 +98,61 @@ let lock_fetch_counter = 0;
 
 
 
-var mixer: any;
-
-const scene = new THREE.Scene()
-scene.add(new THREE.AxesHelper(5))
-
-
-const color = 0xFFFFFF;
-const intensity = 2;
-const light = new THREE.AmbientLight(color, intensity);
-
-const light2 = new THREE.DirectionalLight(color, 10);
-light2.position.set(0,40,0)
-light2.target.position.set(20,0,0)
-
-
-scene.add(light);
-scene.add(light2);
-scene.add(light2.target);
-
-const clock = new THREE.Clock();
-const camera = new THREE.PerspectiveCamera(
-	75,
-	window.innerWidth / window.innerHeight,
-	0.01,
-	4000
-)
-
-
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true})
-renderer.physicallyCorrectLights = true
-renderer.shadowMap.enabled = true
-renderer.setSize(window.innerWidth, window.innerHeight)
-document.body.appendChild(renderer.domElement)
-
-//const controls = new OrbitControls(camera, renderer.domElement)
-//controls.enableDamping = true
-const controls = new FlyControls( camera, renderer.domElement );
-controls.movementSpeed = DEFAULT_MOVEMENT_SPEED;
-controls.rollSpeed = Math.PI / 2;
-controls.autoForward = false;
-controls.dragToLook = true;
-
-const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('js/libs/draco/')
-dracoLoader.preload()
-
-const ktx2Loader = new KTX2Loader();
-ktx2Loader.setTranscoderPath('js/libs/basis/' );
-ktx2Loader.detectSupport( renderer );
-
-const gltfLoader = new GLTFLoader()
-gltfLoader.setDRACOLoader(dracoLoader)
-gltfLoader.setKTX2Loader(ktx2Loader)
-gltfLoader.setMeshoptDecoder(MeshoptDecoder)
+//var mixer: any;
+//
+//const scene = new THREE.Scene()
+//scene.add(new THREE.AxesHelper(5))
+//
+//
+//const color = 0xFFFFFF;
+//const intensity = 2;
+//const light = new THREE.AmbientLight(color, intensity);
+//
+//const light2 = new THREE.DirectionalLight(color, 10);
+//light2.position.set(0,40,0)
+//light2.target.position.set(20,0,0)
+//
+//
+//scene.add(light);
+//scene.add(light2);
+//scene.add(light2.target);
+//
+//const clock = new THREE.Clock();
+//const camera = new THREE.PerspectiveCamera(
+//	75,
+//	window.innerWidth / window.innerHeight,
+//	0.01,
+//	4000
+//)
+//
+//
+//
+//const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true})
+//renderer.physicallyCorrectLights = true
+//renderer.shadowMap.enabled = true
+//renderer.setSize(window.innerWidth, window.innerHeight)
+//document.body.appendChild(renderer.domElement)
+//
+////const controls = new OrbitControls(camera, renderer.domElement)
+////controls.enableDamping = true
+//const controls = new FlyControls( camera, renderer.domElement );
+//controls.movementSpeed = DEFAULT_MOVEMENT_SPEED;
+//controls.rollSpeed = Math.PI / 2;
+//controls.autoForward = false;
+//controls.dragToLook = true;
+//
+//const dracoLoader = new DRACOLoader()
+//dracoLoader.setDecoderPath('js/libs/draco/')
+//dracoLoader.preload()
+//
+//const ktx2Loader = new KTX2Loader();
+//ktx2Loader.setTranscoderPath('js/libs/basis/' );
+//ktx2Loader.detectSupport( renderer );
+//
+//const gltfLoader = new GLTFLoader()
+//gltfLoader.setDRACOLoader(dracoLoader)
+//gltfLoader.setKTX2Loader(ktx2Loader)
+//gltfLoader.setMeshoptDecoder(MeshoptDecoder)
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -156,25 +162,25 @@ const X = Number(urlParams.get('x'))
 const Y = Number(urlParams.get('y'))
 const Z = Number(urlParams.get('z'))
 
-camera.position.x = X
-camera.position.y = Y
-camera.position.z = Z
-const lockY = camera.position.y
+//camera.position.x = X
+//camera.position.y = Y
+//camera.position.z = Z
+//const lockY = camera.position.y
 
 
-document.addEventListener('keydown', (e) => {
-	if (e.shiftKey)
-		controls.movementSpeed *= 10
-	if (controls.movementSpeed > 2000)
-		controls.movementSpeed = 2000
-})
-
-document.addEventListener('keydown', (e) => {
-	if (e.ctrlKey)
-		controls.movementSpeed /= 10
-	if (controls.movementSpeed < 2)
-		controls.movementSpeed = 2
-})
+//document.addEventListener('keydown', (e) => {
+//	if (e.shiftKey)
+//		controls.movementSpeed *= 10
+//	if (controls.movementSpeed > 2000)
+//		controls.movementSpeed = 2000
+//})
+//
+//document.addEventListener('keydown', (e) => {
+//	if (e.ctrlKey)
+//		controls.movementSpeed /= 10
+//	if (controls.movementSpeed < 2)
+//		controls.movementSpeed = 2
+//})
 
 
 
@@ -201,6 +207,8 @@ class Sherpa {
 
 	private _sizeToDo: number;
 
+	private _bufferViewReferenceCount: Array<Array<any>>;
+
 	constructor(modelUrl: string) {
 		this._modelUrl = modelUrl
 		this._jsonSize = -1;
@@ -217,6 +225,7 @@ class Sherpa {
 		this._bufferViewPromiseResolver = [];
 		this._bufferViewPromiseStateArray = [];
 
+		this._bufferViewReferenceCount = [];
 
 		this._modelState = {};
 
@@ -297,6 +306,16 @@ class Sherpa {
 
 			this.makePartitions();  // Probably maximally optimized
 			this.fillGlobalMaps(); // Probably maximally optimized
+
+			for (let i = 0; i < this._bufferViewReferenceCount.length; i++){
+				let x = this._bufferViewReferenceCount[i].length
+				if (x > 1)
+					continue
+					//console.log(i, x, this._fullJSONHeader["bufferViews"][i]["byteLength"], "\tscore:",  x/this._fullJSONHeader["bufferViews"][i]["byteLength"])
+			}
+
+			//console.log(this._bufferViewReferenceCount)
+
 
 			for (let i = 0; i < this._fullJSONHeader["bufferViews"].length; i++){
 				this._bufferViewPromiseStateArray[i] = state.Todo;
@@ -379,7 +398,9 @@ class Sherpa {
 				rotationy: rotations[1],
 				rotationz: rotations[2],
 				rotationw: rotations[3],
+				
 			}
+
 
 
 			this._globalBoundingBoxMap[node["name"]] = bb
@@ -508,6 +529,8 @@ class Sherpa {
 
 		indexes = this.cleanIndexes(indexes);
 
+
+
 		// If there are no indexes to load, return early from this function
 		if (indexes.length === 0)
 			return
@@ -568,7 +591,7 @@ class Sherpa {
 
 	// Creates the new .glb file in memory
 	//@ts-ignore
-	async prepareMultiPack(preparedJson: modelHeader, inpNames: string[],  priorityMap: priorityMap = {}, config: config): Promise<ArrayBuffer|null> {
+	async prepareMultiPack(jsonBytes: any, inpNames: string[],  priorityMap: priorityMap = {}, config: config): Promise<ArrayBuffer|null> {
 		let sum: string = "sum_" + inpNames.join('');
 
 		// Get pre-calcualted indexes
@@ -587,9 +610,9 @@ class Sherpa {
 		return Promise.all(promises).then(() => {
 			let bufferSize = this._bufferSize; 
 
-			let utf8Encode = new TextEncoder();
-			let jsonBytes = utf8Encode.encode(JSON.stringify(preparedJson))
-			let _pack = new ArrayBuffer(20+jsonBytes.length+this._chunk1.byteLength+16) 
+			//let utf8Encode = new TextEncoder();
+			//let jsonBytes = utf8Encode.encode(JSON.stringify(preparedJson))
+			let _pack = new ArrayBuffer(20+jsonBytes.length+this._chunk1.byteLength)//+16) 
 
 			// Prepare the new ArrayBuffer with the necessary values
 			const dv = new DataView(_pack)
@@ -708,56 +731,71 @@ class Sherpa {
 				if ( modelHeader["accessors"][primitive["indices"]]["bufferView"] !== undefined)
 					partition_metadata["bufferViews"].push(modelHeader["accessors"][primitive["indices"]]["bufferView"])
 
-				if (primitive.hasOwnProperty("material")){
-					partition_metadata["materials"].push(primitive["material"])
+
+					if (primitive.hasOwnProperty("material")){
+						partition_metadata["materials"].push(primitive["material"])
 
 
 
 
-					if (modelHeader["materials"][primitive["material"]].hasOwnProperty("pbrMetallicRoughness") && modelHeader["materials"][primitive["material"]]["pbrMetallicRoughness"].hasOwnProperty("baseColorTexture")){
-						partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["pbrMetallicRoughness"]["baseColorTexture"]["index"])
+						if (modelHeader["materials"][primitive["material"]].hasOwnProperty("pbrMetallicRoughness") && modelHeader["materials"][primitive["material"]]["pbrMetallicRoughness"].hasOwnProperty("baseColorTexture")){
+							partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["pbrMetallicRoughness"]["baseColorTexture"]["index"])
+						}
+
+						if (modelHeader["materials"][primitive["material"]].hasOwnProperty("pbrMetallicRoughness") && modelHeader["materials"][primitive["material"]]["pbrMetallicRoughness"].hasOwnProperty("metallicRoughnessTexture")){
+							partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["pbrMetallicRoughness"]["metallicRoughnessTexture"]["index"])
+						}
+
+						if (modelHeader["materials"][primitive["material"]].hasOwnProperty("normalTexture")){
+							partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["normalTexture"]["index"])
+						}
+
+						if (modelHeader["materials"][primitive["material"]].hasOwnProperty("occlusionTexture")){
+							partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["occlusionTexture"]["index"])
+						}
+
+						if (modelHeader["materials"][primitive["material"]].hasOwnProperty("emissiveTexture")){
+							partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["emissiveTexture"]["index"])
+						}
 					}
-
-					if (modelHeader["materials"][primitive["material"]].hasOwnProperty("pbrMetallicRoughness") && modelHeader["materials"][primitive["material"]]["pbrMetallicRoughness"].hasOwnProperty("metallicRoughnessTexture")){
-						partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["pbrMetallicRoughness"]["metallicRoughnessTexture"]["index"])
-					}
-
-					if (modelHeader["materials"][primitive["material"]].hasOwnProperty("normalTexture")){
-						partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["normalTexture"]["index"])
-					}
-
-					if (modelHeader["materials"][primitive["material"]].hasOwnProperty("occlusionTexture")){
-						partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["occlusionTexture"]["index"])
-					}
-
-					if (modelHeader["materials"][primitive["material"]].hasOwnProperty("emissiveTexture")){
-						partition_metadata["textures"].push(modelHeader["materials"][primitive["material"]]["emissiveTexture"]["index"])
-					}
-				}
 
 				partition_metadata["textures"].forEach((textureIndex: number) => {
 					const imageIndex = modelHeader["textures"][textureIndex]["source"];
 					partition_metadata["images"].push(imageIndex);
 
 					const bufferViewIndex = modelHeader["images"][imageIndex]["bufferView"];
-					partition_metadata["bufferViews"].push(bufferViewIndex);
+					//partition_metadata["bufferViews"].push(bufferViewIndex); // Disable this to not download colors
 				});
-			
+
 				
 			});
 
+			//console.log(partition_metadata["bufferViews"])
+
+			//partition_metadata["bufferViews"].forEach((bv: number) => {
+			//	console.log(this._bufferViewReferenceCount[bv])
+			//	if (this._bufferViewReferenceCount[bv] === undefined)
+			//		this._bufferViewReferenceCount[bv] = [nodeName]
+			//	else
+			//		this._bufferViewReferenceCount[bv].push(nodeName)
+			//});
+
+
 		})
+
+		console.log(this._bufferViewReferenceCount)
 
 	}
 
 
-	blindPartitions(inpNames: string[]) : any {
-		let sum: string = "sum_" + inpNames.join('');
-		const modelHeader = this._fullJSONHeader;
-		let output:modelHeader = JSON.parse(JSON.stringify(modelHeader)); // TODO fix speed generally slow
 
+	newPartitions(inpNames: string[]) : any {
+
+		let sum: string = "sum_" + inpNames.join('');
 		this._partitions_metadata[sum] = {}
+		const modelHeader = this._fullJSONHeader;
 		let partition_metadata = this._partitions_metadata[sum]
+
 
 		let treeNodes = ["nodes","bufferViews"]
 
@@ -776,14 +814,99 @@ class Sherpa {
 		});
 
 
-		output["scenes"] = [{"name":"Scene", "nodes": partition_metadata["nodes"]}]
+		if(1){
+		treeNodes = ["materials","textures", "images"]
+
+		treeNodes.forEach((treeNode: string) => {
+			if (modelHeader[treeNode] === undefined)
+				return
+
+			partition_metadata[treeNode] = [] 
+			inpNames.forEach((nodeName: string) => {
+				this._partitions_metadata[nodeName][treeNode].forEach((obj: number) => {
+					modelHeader[treeNode][obj] = {}
+				});
+			});
+
+			partition_metadata[treeNode] = [...new Set(partition_metadata[treeNode])]
+		});
+		}
 
 
-		return output
+
+
+		this._fullJSONHeader["scenes"].push({"name":sum, "nodes": partition_metadata["nodes"]})
+
+		this._fullJSONHeader["scene"] = this._fullJSONHeader["scenes"].length-1
+
+		let utf8Encode = new TextEncoder();
+		let jsonBytes = utf8Encode.encode(JSON.stringify(this._fullJSONHeader))
+		return jsonBytes
 	}
 
 
+
 }
+
+
+let camera:any = null;
+
+
+const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement; // Get the canvas element
+    const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+
+    // Disable loading screen
+    BABYLON.SceneLoader.ShowLoadingScreen = false;
+
+    // Add your code here matching the playground format
+    const createScene = () => {
+        const scene = new BABYLON.Scene(engine);
+        // Install gravity in the scene (e.g., prevent upward camera movement)
+        // !!! NOTE: gravity is currently disabled (i.e., set to 0) !!!
+        scene.gravity = new BABYLON.Vector3(0, 0, 0);
+
+        //BABYLON.MeshBuilder.CreateBox("box", {});
+
+        // glTF Files use right handed system 
+        scene.useRightHandedSystem = true;
+
+        camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1, 0), scene);
+        camera.attachControl(canvas, true);
+        
+        // Set ellipsoid around the camera (i.e., represent human size)
+        camera.ellipsoid = new BABYLON.Vector3(1, 2, 1);
+
+        // Enable scene collisions
+        scene.collisionsEnabled = true;
+
+        // Apply collisions and gravity to the active camera
+        camera.checkCollisions = true;
+        camera.applyGravity = true;
+
+        const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
+     return scene;
+    };
+
+    const scene = createScene(); // Call the createScene function
+
+    // Register a render loop to repeatedly render the scene
+    engine.runRenderLoop(() => {
+        scene.render();
+    });
+
+
+ window.addEventListener("resize", () => {
+        engine.resize();
+    });
+
+
+
+
+
+
+
+
+
 
 
 
@@ -793,53 +916,7 @@ class Sherpa {
 // @ts-ignore
 function loadFancy(inpNames: string[], currentDistanceMap: distanceMap, sherpa: any, config: config): void{
 	if (inpNames.length > 0){
-		let partition = sherpa.blindPartitions(inpNames) // Could be cached
-
-
-
-		const gltf_callback = function(gltf:any):any{
-
-			gltf.scene.traverse(function (child:any) {
-				if ((child as THREE.Mesh).isMesh) {
-					const m = child as THREE.Mesh;
-					m.receiveShadow = true;
-					m.castShadow = true;
-				}
-				if ((child as THREE.Light).isLight) {
-					const l = child as THREE.Light;
-					l.castShadow = true;
-					l.shadow.bias = -0.003;
-					l.shadow.mapSize.width = 2048;
-					l.shadow.mapSize.height = 2048;
-				}
-			});
-
-
-			scene.add(gltf.scene);
-			// Animations
-			mixer = new THREE.AnimationMixer( gltf.scene );
-			gltf.animations.forEach( ( clip:any ) => {
-				mixer.clipAction( clip ).play();
-			});
-
-
-			inpNames.forEach((lname: string) => {
-				sherpa.flagModelLoaded(lname)
-			})
-			document.dispatchEvent(new CustomEvent("modelLoaded", {detail: {inpNames:inpNames, config:config}}))
-
-			if (typeof locks_key[lock_parse_count] === "function" )
-				locks_key[lock_parse_count]()
-			//console.log("after parse", locks, lock_fetch_counter, lock_fetch_counter)
-			lock_parse_count++
-		};
-
-
-		const gltf_error = function(error: any): any{
-			console.error("Error detected with loading", inpNames, "retrying!", JSON.parse(JSON.stringify(sherpa)), error);
-		}
-
-
+		let jsonBytes = sherpa.newPartitions(inpNames) // Could be cached
 
 
 		let x = new Promise((resolve) => {
@@ -847,21 +924,48 @@ function loadFancy(inpNames: string[], currentDistanceMap: distanceMap, sherpa: 
 			locks_key[lock_parse_count_current] = resolve;
 			lock_parse_count_current++
 			
-		}).then( () => {
-			//console.log("lock", lock_parse_count, "resolved");
-		});
+		})
+			//.then( () => {
+			////console.log("lock", lock_parse_count, "resolved");
+			//});
 		locks.push(x)
 
 		locks_key[0]()
+		//TODO check if this does anything
+		//locks_key[lock_parse_count_current-1]() 
 
 		//console.log("before parse", locks, locks_key, lock_fetch_counter)
 		
-		sherpa.prepareMultiPack(partition, inpNames, [], config).then((pack: ArrayBuffer|null) => {
+		sherpa.prepareMultiPack(jsonBytes, inpNames, [], config).then((pack: ArrayBuffer|null) => {
 			if (pack !== null){
-				console.log(performance.now(), "gltf parsing", inpNames.length, "this means the fetch has also been completely parsed")
-				gltfLoader.parse(pack, "", gltf_callback, gltf_error);
-			}
-		})
+				const u8 = new Uint8Array(pack)
+				//console.log(performance.now(), "gltf parsing", inpNames.length, "this means the fetch has also been completely parsed")
+				//gltfLoader.parse(pack, "", gltf_callback, gltf_error);
+				const blob: Blob = new Blob([u8]);
+				const url: string = URL.createObjectURL(blob);
+				BABYLON.SceneLoader.AppendAsync(url, undefined, scene, undefined, ".glb")
+						.then(() => {
+							document.dispatchEvent(new CustomEvent("modelLoaded", {detail: {inpNames:inpNames, config:config}}))
+
+							if (typeof locks_key[lock_parse_count] === "function" )
+								locks_key[lock_parse_count]()
+							//console.log("after parse", locks, lock_fetch_counter, lock_fetch_counter)
+							lock_parse_count++
+
+						})
+
+
+					// .then((scene) => {
+					//     // Make all meshes in the loaded scene collisionable
+					//     scene.meshes.forEach((mesh) => { 
+					//         mesh.checkCollisions = true;
+					//     });
+					// })
+					.catch((err) => {
+						console.log(`Adding glb sub-mesh to scene failed with error "${err}"`);
+					});
+						}
+					})
 
 
 
@@ -875,15 +979,9 @@ const lazy = Number(urlParams.get('l'))
 const instant = Number(urlParams.get('i'))
 
 
-document.addEventListener('keydown', (e) => {
-	if (e.key == "c"){
-		console.log(camera.position)
-	}
-})
-
 if (lazy && urlModel?.includes('glb')){
 	console.log("Starting;", performance.now())
-	loadModel("models/"+urlModel)
+	//loadModel("models/"+urlModel)
 
 } else if (urlModel?.includes('glb')) {
 	console.log("Starting;", performance.now())
@@ -891,10 +989,10 @@ if (lazy && urlModel?.includes('glb')){
 	sandy.initPack().then( () => {
 
 		document.addEventListener('queueLoad', (e: any) => {
-			const currentDistanceMap = calculateDistanceMap(sandy, camera.position)
+			const currentDistanceMap = calculateDistanceMap(sandy, {x:camera.position._x,y:camera.position._x,z:camera.position._x})//TODO fix with actual camera input
 
 			let config = e.detail["config"]
-			let sortedNodes = modifyNodes(camera, currentDistanceMap, sandy, config );
+			let sortedNodes = modifyNodes(camera, currentDistanceMap, sandy, config ); //TODO fix with actual camera input
 
 			sortedNodes.forEach((a: string) => { sandy.addToQueue(a) })
 
@@ -993,37 +1091,7 @@ function dispatchLoading(nodesList: string[], distanceMap:distanceMap, sherpa: a
 
 
 
-window.addEventListener('resize', onWindowResize, false)
-function onWindowResize() {
-	camera.aspect = window.innerWidth / window.innerHeight
-	camera.updateProjectionMatrix()
-	renderer.setSize(window.innerWidth, window.innerHeight)
-	render()
-}
 
-const stats = Stats()
-//document.body.appendChild(stats.dom)
-
-function animate() {
-	requestAnimationFrame(animate)
-
-	controls.update(0.01)
-	if (globalConfig["lockYCoordinate"])
-		camera.position.y = lockY;
-
-	render()
-
-	var delta = clock.getDelta();
-	if ( mixer ) mixer.update( delta );
-
-	stats.update()
-}
-
-function render() {
-	renderer.render(scene, camera)
-}
-
-animate()
 
 
 
@@ -1068,7 +1136,27 @@ function calculateDistance(node:node, origin: generalPoint):number{
 
 
 function checkInBB(bb: boundingbox, camera:any){
-	const frustum = new THREE.Frustum();
+
+	// Get the positions of the cube's opposite corners
+	//
+	//
+	//
+	let corners = calculateNewCubeCorners(
+		{x:bb["minx"], y:bb["miny"], z:bb["minz"]}, 
+		{x:bb["maxx"], y:bb["maxy"], z:bb["maxz"]}, 
+		{x:bb["translatex"],y:bb["translatey"],z:bb["translatez"]},
+		{x:bb["rotationx"],y:bb["rotationy"],z:bb["rotationz"], w:bb["rotationw"]})
+	let corner1 = new BABYLON.Vector3(corners[0].x, corners[0].y, corners[0].z); // First corner coordinates
+	let corner2 = new BABYLON.Vector3(corners[1].x, corners[1].y, corners[1].z); // Opposite corner coordinates
+
+	// Create a bounding box around the cube
+	let boundingBox = new BABYLON.BoundingBox(corner1, corner2);
+
+	let isCubeInView = camera.isInFrustum(boundingBox)
+
+
+	return isCubeInView;
+/*	const frustum = new THREE.Frustum();
 	frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
 
 
@@ -1094,8 +1182,11 @@ function checkInBB(bb: boundingbox, camera:any){
 
 	return frustum.intersectsBox(box);
 	//return {check: frustum.intersectsBox(box), f: frustum}
+	*/
 }
 
+
+/*
 //@ts-ignore
 function checkByPoint(a: any, camera:any){
 	const frustum = new THREE.Frustum();
@@ -1105,58 +1196,111 @@ function checkByPoint(a: any, camera:any){
 
 	return frustum.containsPoint(point)
 }
+*/
 
-function loadModel(model: string): void {
-	let t = performance.now();
-	fetch(model)
-	.then((response) => response.arrayBuffer())
-	.then((result) => {
-		const a = (performance.now()-t)
-		t = performance.now();
-		gltfLoader.parse(result, "", 
-						 function (gltf) {
-							 gltf.scene.traverse(function (child) {
-								 if ((child as THREE.Mesh).isMesh) {
-									 const m = child as THREE.Mesh
-									 m.receiveShadow = true
-									 m.castShadow = true
-								 }
-								 if ((child as THREE.Light).isLight) {
-									 const l = child as THREE.Light
-									 l.castShadow = true
-									 l.shadow.bias = -0.003
-									 l.shadow.mapSize.width = 2048
-									 l.shadow.mapSize.height = 2048
-								 }
-							 })
 
-							 scene.add(gltf.scene)
-
-							 // Animations
-							 mixer = new THREE.AnimationMixer( gltf.scene );
-							 gltf.animations.forEach( ( clip ) => {
-								 mixer.clipAction( clip ).play();
-							 } );
-
-							 // Performance logging
-							 const b = (performance.now()-t)
-							 let blob:Blob = new Blob([a.toString()+","+b.toString()+"\n"], {type: "text/plain"});
-
-							 let link:string = window.URL.createObjectURL(blob);
-							 let domA = document.createElement("a");
-							 domA.download = "done.log";
-							 domA.href = link;
-							 document.body.appendChild(domA);
-							 //domA.click(); //Download data file
-							 document.body.removeChild(domA);
-
-							 setTimeout(()=>{
-							 console.log("done!;", performance.now())
-							 }, 0);
-						 })
-	})
+interface Vec3 {
+  x: number;
+  y: number;
+  z: number;
 }
 
+interface Quat {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+}
+
+function addVec3(a: Vec3, b: Vec3): Vec3 {
+  return {
+    x: a.x + b.x,
+    y: a.y + b.y,
+    z: a.z + b.z,
+  };
+}
+
+function subtractVec3(a: Vec3, b: Vec3): Vec3 {
+  return {
+    x: a.x - b.x,
+    y: a.y - b.y,
+    z: a.z - b.z,
+  };
+}
+
+function scaleVec3(v: Vec3, scalar: number): Vec3 {
+  return {
+    x: v.x * scalar,
+    y: v.y * scalar,
+    z: v.z * scalar,
+  };
+}
+
+function normalizeVec3(v: Vec3): Vec3 {
+  const length = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+  if (length !== 0) {
+    const invLength = 1 / length;
+    return scaleVec3(v, invLength);
+  } else {
+    return { x: 0, y: 0, z: 0 };
+  }
+}
+
+function multiplyQuat(a: Quat, b: Quat): Quat {
+  return {
+    x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+    y: a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+    z: a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+    w: a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
+  };
+}
+
+function transformQuat(v: Vec3, q: Quat): Vec3 {
+  const x = q.x;
+  const y = q.y;
+  const z = q.z;
+  const w = q.w;
+  const x2 = x + x;
+  const y2 = y + y;
+  const z2 = z + z;
+  const xx2 = x * x2;
+  const xy2 = x * y2;
+  const xz2 = x * z2;
+  const yy2 = y * y2;
+  const yz2 = y * z2;
+  const zz2 = z * z2;
+  const wx2 = w * x2;
+  const wy2 = w * y2;
+  const wz2 = w * z2;
+  return {
+    x: (1 - yy2 - zz2) * v.x + (xy2 - wz2) * v.y + (xz2 + wy2) * v.z,
+    y: (xy2 + wz2) * v.x + (1 - xx2 - zz2) * v.y + (yz2 - wx2) * v.z,
+    z: (xz2 - wy2) * v.x + (yz2 + wx2) * v.y + (1 - xx2 - yy2) * v.z,
+  };
+}
+
+function calculateNewCubeCorners(corner1: Vec3, corner2: Vec3, translation: Vec3, rotation: Quat): Vec3[] {
+  // Step 1: Calculate center point
+  const center: Vec3 = scaleVec3(addVec3(corner1, corner2), 0.5);
+
+  // Step 2: Get relative corner positions
+  const relativeCorner1: Vec3 = subtractVec3(corner1, center);
+  const relativeCorner2: Vec3 = subtractVec3(corner2, center);
+
+  // Step 3: Apply rotation to relative corner positions
+  const rotatedCorner1: Vec3 = transformQuat(relativeCorner1, rotation);
+  const rotatedCorner2: Vec3 = transformQuat(relativeCorner2, rotation);
+
+  // Step 4: Add translation to rotated corner positions
+  const translatedRotatedCorner1: Vec3 = addVec3(rotatedCorner1, translation);
+  const translatedRotatedCorner2: Vec3 = addVec3(rotatedCorner2, translation);
+
+  // Step 5: Add center point back to translated and rotated corner positions
+  const newCorner1: Vec3 = addVec3(translatedRotatedCorner1, center);
+  const newCorner2: Vec3 = addVec3(translatedRotatedCorner2, center);
+
+  return [newCorner1, newCorner2];
+}
 
 
 
