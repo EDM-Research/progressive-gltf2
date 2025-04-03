@@ -24,6 +24,8 @@ The glTF 2.0 graphics format allows for the API-neutral representation of 3D sce
 
 ## Acknowledgments
 
-The research leading to these results has received funding from the European Union's Horizon Europe Programme under grant agreement 101070072, **MAX-R (Mixed Augmented and eXtended Reality media pipeline)**.
+The research leading to these results has received funding from the European Union's Horizon Europe Programme under grant agreement 101070072, **[MAX-R](https://upf.edu/web/max-r/) (Mixed Augmented and eXtended Reality media pipeline)**.
 
 ![logo_maxr_main_sRGB](https://github.com/EDM-Research/progressive-gltf2/assets/4068862/6c64df22-cfca-4ab3-8b4a-609c56317319)
+
+![EN_Co-fundedbytheEU_RGB_POS](https://github.com/user-attachments/assets/75465491-0ca9-43ec-8ffb-b135162e6ec0)
